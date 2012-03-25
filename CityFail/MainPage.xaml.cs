@@ -11,6 +11,9 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 
+// Directive for the data model.
+using CityFail.Model;
+
 namespace CityFail
 {
     public partial class MainPage : PhoneApplicationPage
@@ -19,6 +22,24 @@ namespace CityFail
         public MainPage()
         {
             InitializeComponent();
+
+            // Set the page DataContext property to the ViewModel.
+            this.DataContext = App.ViewModel;
+        }
+
+        private void startImportButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Let's start by importing the descriptors!
+
+            // Create a new descriptor.
+            Descriptor newDescriptor = new Descriptor
+            {
+                CommonName = "This is my new descriptor."
+            };
+
+            // Add the item to the ViewModel.
+            App.ViewModel.AddDescriptor(newDescriptor);
+
         }
     }
 }

@@ -13,6 +13,10 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 
+// Directives
+using CityFail.Model;
+using CityFail.ViewModel;
+
 namespace CityFail
 {
     public partial class App : Application
@@ -22,6 +26,13 @@ namespace CityFail
         /// </summary>
         /// <returns>The root frame of the Phone Application.</returns>
         public PhoneApplicationFrame RootFrame { get; private set; }
+
+        // The static ViewModel, to be used across the application.
+        private static CityFailViewModel viewModel;
+        public static CityFailViewModel ViewModel
+        {
+            get { return viewModel; }
+        }
 
         /// <summary>
         /// Constructor for the Application object.
@@ -56,6 +67,33 @@ namespace CityFail
                 // and consume battery power when the user is not using the phone.
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
+
+            // Specify the local database connection string.
+            string DBConnectionString = CityFailContext.ConnectionString;
+
+            // Create the database if it does not exist.
+            using (CityFailContext db = new CityFailContext(DBConnectionString))
+            {
+                if (db.DatabaseExists() == false)
+                {
+                    // Create the local database.
+                    db.CreateDatabase();
+
+                    // TODO: Prepopulate the categories.
+                    //db.Categories.InsertOnSubmit(new ToDoCategory { Name = "Home" });
+                    //db.Categories.InsertOnSubmit(new ToDoCategory { Name = "Work" });
+                    //db.Categories.InsertOnSubmit(new ToDoCategory { Name = "Hobbies" });
+
+                    // Save categories to the database.
+                    db.SubmitChanges();
+                }
+            }
+
+            // Create the ViewModel object.
+            viewModel = new CityFailViewModel(DBConnectionString);
+
+            // Query the local database and load observable collections.
+            // TODO: viewModel.LoadCollectionsFromDatabase();
 
         }
 
