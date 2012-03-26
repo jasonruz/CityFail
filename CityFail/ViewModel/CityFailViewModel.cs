@@ -41,8 +41,8 @@ namespace CityFail.ViewModel
             // Save changes to the database.
             cityFailDB.SubmitChanges();
 
-            // Update the view.
-            // TODO NEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // Update the ViewModel.
+            StatusText += ".";
         }
 
         #region INotifyPropertyChanged Members
