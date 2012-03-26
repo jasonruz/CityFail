@@ -41,24 +41,32 @@ namespace CityFail.Model
 
             // Skip to StopPoints
             reader.ReadToDescendant("StopPoints");
-
         }
 
         /// <summary>
         /// Gets the next descriptor from the XML file.
         /// Precondition: Reader is inside StopPoints tags.
         /// </summary>
-        /// <returns>The next Descriptor.</returns>
+        /// <returns>The next Descriptor, or null if there are no more.</returns>
         public Descriptor ReadDescriptor()
         {
-            reader.ReadToDescendant("Descriptor");
-            reader.ReadStartElement("Descriptor");
-            reader.ReadStartElement("CommonName");
+            // See if the next StopPoint can be found.
+            if (reader.ReadToFollowing("StopPoint"))
+            {
+                // Skip to the CommonName.
+                reader.ReadToDescendant("Descriptor");
+                reader.ReadStartElement("Descriptor");
+                reader.ReadStartElement("CommonName");
 
-            Descriptor newDescriptor = new Descriptor();
-            newDescriptor.CommonName = reader.ReadContentAsString();
+                // Add the CommonName to a new Descriptor.
+                Descriptor newDescriptor = new Descriptor
+                {
+                    CommonName = reader.ReadContentAsString()
+                };
 
-            return newDescriptor;
+                return newDescriptor;
+            }
+            else return null;
         }
     }
 }

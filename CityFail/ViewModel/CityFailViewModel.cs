@@ -67,18 +67,24 @@ namespace CityFail.ViewModel
         public void ImportDescriptors()
         {
             NSWTDXModel tdx = new NSWTDXModel();
+            Descriptor newDescriptor = new Descriptor();
 
             // Read a new descriptor.
-            Descriptor newDescriptor = tdx.ReadDescriptor();
+            while ((newDescriptor = tdx.ReadDescriptor()) != null)
+            {
+                // Add a descriptor to the data context.
+                cityFailDB.Descriptors.InsertOnSubmit(newDescriptor);
 
-            // Add a descriptor to the data context.
-            cityFailDB.Descriptors.InsertOnSubmit(newDescriptor);
+                // Save changes to the database.
+                cityFailDB.SubmitChanges();
 
-            // Save changes to the database.
-            cityFailDB.SubmitChanges();
-
-            // Update the ViewModel.
-            StatusText += ".";
+                // Update the ViewModel.
+                if (StatusText == null)
+                {
+                    StatusText = (0).ToString();
+                }
+                StatusText = (int.Parse(StatusText)+1).ToString();
+            }
         }
 
         #region INotifyPropertyChanged Members
